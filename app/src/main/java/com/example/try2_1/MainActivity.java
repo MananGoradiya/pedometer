@@ -49,45 +49,12 @@ long avg;
     FirebaseAuth fauth;
     FirebaseFirestore fstore;
 
-    Map<String ,Object>obj=new HashMap<>();
+    Map<String ,Object>objm=new HashMap<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-/*---------------------------------progress bar start------------------------------------------------------------------*/
-/*
-        Resources resources = getResources();
-        Drawable drawable = resources.getDrawable(R.drawable.circularprogressbar);
-        final ProgressBar progressBar = findViewById(R.id.circularProgressbar);
-        progressBar.setProgress(0);
-        progressBar.setSecondaryProgress(100);
-        progressBar.setMax(100);
-        progressBar.setProgressDrawable(drawable);
-        textView = findViewById(R.id.textView);
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (status < 100) {
-                    status += 1;
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            progressBar.setProgress(status);
-                            textView.setText(String.format("%d%%", status));
-                        }
-                    });
-                    try {
-                        Thread.sleep(16);
-                    }
-                    catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }).start();
-*/
-/*------------------------------progress bar End--------------------------------------------------------*/
         sm=(SensorManager) getSystemService(SENSOR_SERVICE);
         s=sm.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
         r=(Button)findViewById(R.id.res);
@@ -98,6 +65,8 @@ long avg;
         p.setOnClickListener(this);
         fauth=FirebaseAuth.getInstance();
         fstore=FirebaseFirestore.getInstance();
+
+      //  Map<String,Object> objm=new HashMap<>();
 
 
 
@@ -157,22 +126,7 @@ long avg;
                                  ch.setBase(SystemClock.elapsedRealtime()-pauseoffset);
 
 
-                        /*         Map<String,Object>obj=new HashMap<>();
 
-                                 fstore.collection("Data").document("step detection").set(obj).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                     @Override
-                                     public void onSuccess(Void aVoid) {
-                                         Toast.makeText(getApplicationContext(),"Updated successfully",Toast.LENGTH_SHORT).show();
-                                     }
-                                 }).addOnFailureListener(new OnFailureListener() {
-                                     @Override
-                                     public void onFailure(@NonNull Exception e) {
-                                         Toast.makeText(getApplicationContext(),"plzz try again", Toast.LENGTH_SHORT);
-                                     }
-                                 });
-
-
-                                 */
                                  ch.start();
                                  running =true;
                             }
@@ -193,9 +147,9 @@ long avg;
 
                     String fspeed= textView.getText().toString();
                    // Map<String ,Object>obj=new HashMap<>();
-                    obj.put("speed",fspeed);
+                    objm.put("speed",fspeed);
 
-                    fstore.collection("Step detectator").document("Data").set(obj).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    fstore.collection("Step detectator").document("Data").update(objm).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
                             Toast.makeText(getApplicationContext(),"Updated successfully",Toast.LENGTH_SHORT).show();
@@ -217,10 +171,27 @@ long avg;
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-
+        String uid=fauth.getUid();
         switch (sensorEvent.sensor.TYPE_STEP_DETECTOR) {
             case Sensor.TYPE_STEP_DETECTOR:
                 stepDetector++;
+
+               // Map<String,Object> objm=new HashMap<>();
+                objm.put("Steps",stepDetector);
+                //objm.put("Speed",)
+
+                fstore.collection("Users").document(uid).update(objm).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(getApplicationContext(),"Steps updated",Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getApplicationContext(),"Steps not updated",Toast.LENGTH_SHORT);
+                    }
+                });
+
 
                 if(stepDetector==1)
                 {
@@ -234,21 +205,13 @@ long avg;
         }
         String fstep= (String) fin.getText();
        // Map<String,Object> obj1=new HashMap<>();
-        obj.put("Steps",fstep);
+       // objm.put("Steps",fstep);
 
-        fstore.collection("Step detectator").document("Data").set(obj).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Toast.makeText(getApplicationContext(),"updated successfully",Toast.LENGTH_SHORT).show();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getApplicationContext(),"plzz try again",Toast.LENGTH_SHORT).show();
-            }
-        });
+
 
     }
+
+
 
 
 
