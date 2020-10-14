@@ -61,6 +61,7 @@ long avg;
         p=(Button) findViewById(R.id.pau);
         ch=findViewById(R.id.chronometer);
         fin=(TextView) findViewById(R.id.fi);
+
         r.setOnClickListener(this);
         p.setOnClickListener(this);
         fauth=FirebaseAuth.getInstance();
